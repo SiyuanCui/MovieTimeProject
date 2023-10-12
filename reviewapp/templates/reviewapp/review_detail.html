@@ -1,0 +1,233 @@
+{% load static %}
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>MovieTime</title>
+        <style>
+        .circle-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .circle-image-sm {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            align-items: flex-start;
+        }
+        .poster {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .movie-info {
+            flex: 2;
+            padding: 20px;
+        }
+
+        .like-color{
+            color: antiquewhite;
+        }
+
+        .container-rate {
+            border: 2px solid antiquewhite;
+            padding: 10px;
+            margin: 10px auto;
+            margin-top: 0;
+            text-align: left;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 250px;
+            display: flex;
+        }
+
+        .container-review {
+            border: 2px solid antiquewhite;
+            padding: 10px;
+            margin: 10px auto;
+            max-width: calc(100% - 500px);
+            text-align: left;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+         .container-comment{
+            border: 2px solid antiquewhite;
+            padding: 10px;
+            margin-left: 30px;
+            margin-right: 20px;
+            width: 850px;
+            text-align: left;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .inner-div {
+            flex: 1; /* 占据左半边宽度 */
+        }
+        .right-div {
+            flex: 1; /* 占据右半边宽度 */
+            background-color: transparent; /* 背景颜色 */
+            padding: 10px; /* 添加一些内边距 */
+        }
+        a.special-link {
+            color: #64a19d;
+        }
+
+        a.special-link:hover {
+            color: antiquewhite;
+        }
+
+        </style>
+        <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="{% static 'css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
+        <link href="{% static 'css/style.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
+    </head>
+    <body>
+        <!-- Navigation-->
+        {% include 'movieapp/navbar.html' %}
+
+                <!-- Masthead-->
+        <header class="masthead">
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="container">
+            <div class="poster">
+            <a href="{% url 'movie-details' movie.imdbID %}"><img src="{{ movie.Poster.url }}"></a>
+          </div>
+          <div class="movie-info">
+{#            <div class="card-content">#}
+              <span style="color: antiquewhite" class="card-title"><b>{{ movie.Title }}</b></span>
+              <p style="color: antiquewhite">{{ movie.Type }}</p>
+              <br>
+              <p style="color: antiquewhite">{{ movie.Plot }}</p>
+              <br>
+           <div class="container-rate">
+                     <div class="inner-div" style="margin: 10px">
+                     {% if review.user.profile.picture %}
+                      <img src="{{ review.user.profile.picture.url }}" alt="" class="circle-image">
+                    {% else %}
+                      <img src="{% static 'img/no_avatar.jpg' %}" alt="" class="circle-image">
+                    {% endif %}
+                     </div>
+                    <div class="right-div">
+                        <br>
+                        <h5 class="like-color"><b>{{ review.user.first_name }} {{ review.user.last_name }}</b></h5>
+                        <h5 class="like-color" style="font-size: medium">@{{ review.user.username }}</h5>
+                    </span>
+                    <span>
+                        <p class="like-color">{{ review.date }}</p>
+                    </span>
+
+                     <h5 class="like-color">Rated this movie</h5>
+                      <h5 class="like-color">{{ review.stars }} / 10</h5>
+                     </div>
+           </div>
+          </div>
+        </div>
+
+
+        <h4 style="color: antiquewhite; margin-left: 20%">Reviews</h4>
+            <div class="container-review">
+              <div>
+                  <div style="margin: 20px; font-size: larger">
+
+                      <span class="like-color"><b>{{ review.user.first_name }} {{ review.user.last_name }}</b>
+                          <span>@{{ review.user.username }}</span>
+                           {% if request.user == review.user %}
+                                <span class="right"><a class="special-link" href="{% url 'delete-review' username=review.user.username imdb_id=movie.imdbID %}">Delete<i class="material-icons right">delete</i></a></span>
+                           {% endif %}
+                      </span>
+                  <p class="like-color" style="font-size: small">{{ review.date }}</p>
+                  <span class="like-color" >{{ review.text }}</span>
+
+
+
+
+
+                </div>
+                  <div style="margin-left: 20px">
+                    <a class="special-link" href="{% url 'handle-like' username=review.user.username imdb_id=movie.imdbID like_action='like' %}"><i class="material-icons">thumb_up</i>{{ review.likes }}</a>
+                    <a class="special-link" href="{% url 'handle-like' username=review.user.username imdb_id=movie.imdbID like_action='unlike'%}"><i class="material-icons">thumb_down</i>{{ review.unlikes }}</a>
+                      <br>
+                      <br>
+                  </div>
+              </div>
+
+      <div class="divider"></div>
+             <h4 style="color: antiquewhite; margin-left: 5px">Comments on Reviews</h4>
+            {% for comment in comments %}
+            <div class="container-rate">
+                    <div style="margin: 20px">
+                    {% if comment.user.profile.picture %}
+                      <img src="{{ comment.user.profile.picture.url }}" alt="" class="circle-image-sm">
+                    {% else %}
+                      <img src="{% static 'img/no_avatar.jpg' %}" alt="" class="circle-image-sm">
+                    {% endif %}
+                    <span style="color: antiquewhite; font-size: larger" class="title">
+                        <b>{{ comment.user.first_name }} {{ comment.user.last_name }}</b>
+                        <span style="font-size: medium">@{{ comment.user.username }}</span>
+                    </span>
+                     <div><br></div>
+                    <div class="like-color" style="font-size: larger">{{ comment.body }}</div>
+                     <br>
+                    <div style="color: antiquewhite; font-size: smaller">{{ comment.date }}</div>
+                    </div>
+            </div>
+            {% endfor %}
+            <div class="container-comment">
+            <form method="post" action="" role="form" class="col s12">
+                {% csrf_token %}
+              <div style="border-radius: 20px" class="input-field col s6">
+                  {{ form.body }}
+                <label for="textarea1">Comment</label>
+              </div>
+              <button type="submit" name="action" class="custom-button" style="margin-left: 50%"><i class="material-icons left">send</i>Comment</button>
+            </form>
+            </div>
+            </div>
+        </div>
+            </div>
+        </header>
+        <div class="black-background">
+        </div>
+      </div>
+    </div>
+    </div>
+
+
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'js/scripts.js' %}"></script>
+        <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script src="{% static 'js/materialize.js' %}"></script>
+        <script src="{% static 'js/init.js' %}"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>

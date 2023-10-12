@@ -1,0 +1,215 @@
+{% load static %}
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>MoiveTime</title>
+        <style>
+            .poster-container {
+            margin-left: 120px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .poster {
+            width: calc(33.33% - 20px);
+            margin-bottom: 50px;
+        }
+
+        .container {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .personal-info {
+            flex: 1;
+            padding: 0px;
+        }
+
+        .watched-etc {
+            flex: 2;
+            padding: 20px;
+        }
+
+        .parent-container {
+            display: flex;
+            justify-content: space-between; /* 将子元素平均分布在父容器内 */
+            align-items: center; /* 垂直居中子元素 */
+            padding: 10px;
+            margin-left:200px;
+            width: 700px;
+            color: antiquewhite;
+        }
+
+        /* 子容器的样式 */
+        .child-container {
+            flex: 1; /* 每个子容器占据父容器的三分之一宽度 */
+            padding: 10px;
+            text-align: left;
+        }
+
+        a.hlink {
+            color: #64a19d;
+            text-decoration: none;
+        }
+
+        a.hlink :hover {
+            color: antiquewhite;
+        }
+
+    </style>
+        <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="{% static 'css/materialize.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
+        <link href="{% static 'css/style.css' %}" type="text/css" rel="stylesheet" media="screen,projection">
+    </head>
+    <body>
+        <!-- Navigation-->
+        {% include 'movieapp/navbar.html' %}
+
+                <!-- Masthead-->
+        <div class="masthead">
+        <br>
+        <br>
+<div style="margin-left: 50px">
+    <h3 style="color:antiquewhite;">@{{ profile.user.username }}</h3>
+    <h5 style="color: #64a19d">Critic Level{{ highest_badge_level }}</h5>
+</div>
+        <div class="container">
+            <div class="personal-info">
+                 <h5 style="color: antiquewhite">User information</h5>
+                    <li style="color: antiquewhite">First Name: <b>{{ profile.first_name }}</b></li>
+                    <li style="color: antiquewhite">Last Name: <b>{{ profile.last_name }}</b></li>
+                    <li style="color: antiquewhite">Location: <b>{{ profile.location }}</b></li>
+                    <li style="color: antiquewhite">Bio:
+                      {{ profile.profile_info }}
+                    </li>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+                 {% if user.is_authenticated and user == profile.user %}
+                   <a href="{% url 'profile-edit' %}" class="custom-button" style="margin-left: 80px">Edit Profile</a>
+                 {% endif %}
+            </div>
+            <div class="watched-etc">
+
+            <div class="parent-container">
+                <div class="child-container"><span><a class="hlink" href="{% url 'profile-detail' username=profile.user.username profile_type='Movies Watched' %}">Movies Watched</a></span></div>
+                <div class="child-container">
+                    <span style="margin-left: 50%;"><b>{{ movie_watched_count }}</b></span>
+                </div>
+                <div class="child-container">
+                </div>
+            </div>
+
+
+            <div class="parent-container">
+                <div class="child-container"><span><a class="hlink" href="{% url 'profile-detail' username=profile.user.username profile_type='Series Watched' %}">Series Watched</a></span> </div>
+                <div class="child-container">
+                    <span style="margin-left: 50%;"><b>{{ series_watched_count }}</b></span>
+                </div>
+                <div class="child-container">
+                </div>
+            </div>
+
+            <div class="parent-container">
+                <div class="child-container">
+                    <span><a class="hlink" href="{% url 'profile-detail' username=profile.user.username profile_type='Watch list' %}">Movies in watchlist</a></span>
+                </div>
+                <div class="child-container">
+                    <span style="margin-left: 50%;"><b>{{ watch_list_count }}</b></span>
+                </div>
+                <div class="child-container">
+
+                </div>
+            </div>
+
+            <div class="parent-container">
+                <div class="child-container">
+                    <span class="title"><a class="hlink" href="{% url 'profile-detail' username=profile.user.username profile_type='Movie Reviewed' %}">Movies Reviewed</a></span>
+                </div>
+                <div class="child-container">
+                    <span style="margin-left: 50%;"><b>{{ movie_reviewed_count }}</b></span>
+                </div>
+                <div class="child-container">
+                </div>
+            </div>
+
+        </div>
+        </div>
+
+
+        <div style="margin-top: 100px">
+        {% if list_title %}
+              <h4 style="margin-left: 100px;color: antiquewhite" >{{ list_title }}: </h4>
+          {% if list_title == 'Movie Reviewed' %}
+              <div class="poster-container">
+                  {% for review in movie_data %}
+                      <div class="poster">
+                          <a href="{% url 'review-detail' review.user.username review.movie.imdbID %}"><img style="width: 300px; height: 444px" src="{{ review.movie.Poster.url }}"></a>
+                      </div>
+                  {% endfor %}
+              </div>
+          {% else %}
+              <div class="poster-container">
+                  {% for movie in movie_data %}
+                      <div class="poster">
+                          <a href="{% url 'movie-details' movie.imdbID %}"><img src="{{ movie.Poster_url }}" width="300px" height="444px"></a>
+                      </div>
+                  {% endfor %}
+              </div>
+          {% endif %}
+
+            <div>
+              <div>
+              {% if movie_data.has_previous and not movie_data.has_next %}
+                <a href="?page={{ movie_data.previous_page_number }}" class="custom-button" style="margin-left: 50%"><i class="material-icons right">arrow_back</i>Back</a>
+              {% elif movie_data.has_next and not movie_data.has_previous%}
+                <a href="?page={{ movie_data.next_page_number }}" class="custom-button" style="margin-left: 50%"><i class="material-icons right">add</i>More</a>
+              {% elif not movie_data.has_previous and not movie_data.has_next %}
+                <div></div>
+              {% else %}
+              <div class="button-container">
+                 <a href="?page={{ movie_data.previous_page_number }}" class="custom-button"><i class="material-icons right">arrow_back</i>Back</a>
+                 <a href="?page={{ movie_data.next_page_number }}" class="custom-button"><i class="material-icons right">add</i>More</a>
+              </div>
+              {% endif %}
+              </div>
+            </div>
+        {% endif %}
+        </div>
+        </div>
+        </header>
+        <div class="black-background"></div>
+    </body>
+
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'js/scripts.js' %}"></script>
+        <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script src="{% static 'js/materialize.js' %}"></script>
+        <script src="{% static 'js/init.js' %}"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>
+
+
+
